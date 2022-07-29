@@ -5,11 +5,18 @@ fn main() {
     let filename = "src/input/measurements";
     let lines = read_file(filename);
 
+    let measurements: Vec<i64> = lines.iter().map(|l| l.parse::<i64>().unwrap()).collect();
 
-    for line in lines {
+    let mut def = measurements[0];
+    let mut count = 0;
+    for m in measurements {
+        if m > def {
+            count += 1;
+        }
+        def = m;
     }
 
-    println!("Result: ");
+    println!("Result: {}", count);
 }
 
 fn read_file(path: &str) -> Vec<String> {
