@@ -9,6 +9,22 @@ fn main() {
     let cmds = parse_commands(lines);
 
     println!("{}", cmds);
+
+    let (mut h, mut d) = (0, 0);
+    for cmd in cmds.0 {
+        if cmd.direction == "forward" {
+            h+=cmd.unit;
+        } else if cmd.direction == "up" {
+            d-=cmd.unit;
+        } else {
+            d+=cmd.unit;
+        }
+    }
+
+    println!("horizontal = {}", h);
+    println!("depth = {}", d);
+
+    println!("Result: {}", h*d);
 }
 
 struct Command {
