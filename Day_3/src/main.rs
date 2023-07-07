@@ -9,28 +9,35 @@ fn main() {
 
     let report = parse_report(lines);
 
-    let width = report.0[0].0.len();
-    println!("width = {}", width);
-    for col in 0..width {
-        println!("{:?}. step", col);
+    let bin_num_size = report.0[0].0.len();
+    let mut gamma = vec![-1; bin_num_size];
+    let mut epsilon = vec![-1; bin_num_size];
+    let (mut count_bit0, mut count_bit1) = (0, 0);
+
+    // calculate the gamma and epsilon rate
+    for col in 0..bin_num_size {
         for row in &report.0 {
-            println!("{}", row.0[col]);
+            if row.0[col] == 0 {
+                count_bit0+=1;
+            } else {
+                count_bit1+=1;
+            }
         }
-        println!("--------------------");
+
+        if count_bit0 > count_bit1 {
+            gamma[col] = 0;
+            epsilon[col] = 1;
+        } else {
+            gamma[col] = 1;
+            epsilon[col] = 0;
+        }
+
+        count_bit0 = 0;
+        count_bit1 = 0;
     }
 
-
-    // for r in &report.0 {
-    //     for l in &r.0[0..r.0.len()] {
-    //         //print!("{}", l);
-    //         &report.0[l];
-    //
-    //     }
-    //     //println!("\n-------------------");
-    //     //println!("{}", r.0[0]);
-    // }
-
-    //println!("{}", report);
+    println!("gamma: {:?}", gamma);
+    println!("epsilon: {:?}", epsilon);
 
 }
 
@@ -50,10 +57,6 @@ impl NumVec {
 
     fn add(&mut self, elem: i32) {
         self.0.push(elem);
-    }
-
-    fn get(&mut self, i: usize) {
-        self.0.get(i);
     }
 }
 
