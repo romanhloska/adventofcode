@@ -39,6 +39,17 @@ fn main() {
     println!("gamma: {:?}", gamma);
     println!("epsilon: {:?}", epsilon);
 
+    let gamma_to_string: Vec<String> = gamma.iter().map(|v| v.to_string()).collect();
+    let epsilon_to_string: Vec<String> = epsilon.iter().map(|v| v.to_string()).collect();
+    let joined_gamma_vals = gamma_to_string.join("");
+    let joined_epsilon_vals = epsilon_to_string.join("");
+    let gamma_dec = i32::from_str_radix(&joined_gamma_vals, 2).expect("Not a binary number!");
+    let epsilon_dec = i32::from_str_radix(&joined_epsilon_vals, 2).expect("Not a binary number!");
+    println!("{:?}", gamma_dec);
+    println!("{:?}", epsilon_dec);
+
+    println!("submarine consumption: {}", (gamma_dec * epsilon_dec));
+
 }
 
 fn read_file(path: &str) -> Vec<String> {
