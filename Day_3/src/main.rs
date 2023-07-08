@@ -11,18 +11,16 @@ fn main() {
 
     let (gamma, epsilon) = calculate_gamma_epsilon_rate(&report);
 
-    let gamma_to_string: Vec<String> = gamma.iter().map(|v| v.to_string()).collect();
-    let epsilon_to_string: Vec<String> = epsilon.iter().map(|v| v.to_string()).collect();
-    let joined_gamma_vals = gamma_to_string.join("");
-    let joined_epsilon_vals = epsilon_to_string.join("");
+    let gamma_bin = transform_to_binary(gamma);
+    let epsilon_bin = transform_to_binary(epsilon);
 
-    let gamma_dec = i32::from_str_radix(&joined_gamma_vals, 2).expect("Not a binary number!");
-    let epsilon_dec = i32::from_str_radix(&joined_epsilon_vals, 2).expect("Not a binary number!");
+    let gamma_dec = i32::from_str_radix(&gamma_bin, 2).expect("Not a binary number!");
+    let epsilon_dec = i32::from_str_radix(&epsilon_bin, 2).expect("Not a binary number!");
 
-    println!("gamma (binary, hex): {:?} -> {:?}", joined_gamma_vals, gamma_dec);
-    println!("epsilon (binary, hex): {:?} -> {:?}", joined_epsilon_vals, epsilon_dec);
+    println!("gamma (binary, hex): {:?} -> {:?}", gamma_bin, gamma_dec);
+    println!("epsilon (binary, hex): {:?} -> {:?}", epsilon_bin, epsilon_dec);
+
     println!("submarine consumption: {}", (gamma_dec * epsilon_dec));
-
 }
 
 fn read_file(path: &str) -> Vec<String> {
@@ -123,4 +121,10 @@ fn calculate_gamma_epsilon_rate(report: &Report) -> (Vec<i32>, Vec<i32>) {
     }
 
     (gamma, epsilon)
+}
+
+fn transform_to_binary(val: Vec<i32>) -> String {
+    let val_to_string: Vec<String> = val.iter().map(|v| v.to_string()).collect();
+
+    val_to_string.join("")
 }
