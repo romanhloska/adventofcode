@@ -9,45 +9,18 @@ fn main() {
 
     let report = parse_report(lines);
 
-    let bin_num_size = report.0[0].0.len();
-    let mut gamma = vec![-1; bin_num_size];
-    let mut epsilon = vec![-1; bin_num_size];
-    let (mut count_bit0, mut count_bit1) = (0, 0);
-
-    // calculate the gamma and epsilon rate
-    for col in 0..bin_num_size {
-        for row in &report.0 {
-            if row.0[col] == 0 {
-                count_bit0+=1;
-            } else {
-                count_bit1+=1;
-            }
-        }
-
-        if count_bit0 > count_bit1 {
-            gamma[col] = 0;
-            epsilon[col] = 1;
-        } else {
-            gamma[col] = 1;
-            epsilon[col] = 0;
-        }
-
-        count_bit0 = 0;
-        count_bit1 = 0;
-    }
-
-    println!("gamma: {:?}", gamma);
-    println!("epsilon: {:?}", epsilon);
+    let (gamma, epsilon) = calculate_gamma_epsilon_rate(&report);
 
     let gamma_to_string: Vec<String> = gamma.iter().map(|v| v.to_string()).collect();
     let epsilon_to_string: Vec<String> = epsilon.iter().map(|v| v.to_string()).collect();
     let joined_gamma_vals = gamma_to_string.join("");
     let joined_epsilon_vals = epsilon_to_string.join("");
+
     let gamma_dec = i32::from_str_radix(&joined_gamma_vals, 2).expect("Not a binary number!");
     let epsilon_dec = i32::from_str_radix(&joined_epsilon_vals, 2).expect("Not a binary number!");
-    println!("{:?}", gamma_dec);
-    println!("{:?}", epsilon_dec);
 
+    println!("gamma (binary, hex): {:?} -> {:?}", joined_gamma_vals, gamma_dec);
+    println!("epsilon (binary, hex): {:?} -> {:?}", joined_epsilon_vals, epsilon_dec);
     println!("submarine consumption: {}", (gamma_dec * epsilon_dec));
 
 }
@@ -119,4 +92,35 @@ fn parse_report(lines: Vec<String>) -> Report {
     let cs = Report(reps);
 
     cs
+}
+
+fn calculate_gamma_epsilon_rate(report: &Report) -> (Vec<i32>, Vec<i32>) {
+    let bin_num_size = report.0[0].0.len();
+    let mut gamma = vec![-1; bin_num_size];
+    let mut epsilon = vec![-1; bin_num_size];
+    let (mut count_bit0, mut count_bit1) = (0, 0);
+
+    // calculate the gamma and epsilon rate
+    for col in 0..bin_num_size {
+        for row in &report.0 {
+            if row.0[col] == 0 {
+                count_bit0+=1;
+            } else {
+                count_bit1+=1;
+            }
+        }
+
+        if count_bit0 > count_bit1 {
+            gamma[col] = 0;
+            epsilon[col] = 1;
+        } else {
+            gamma[col] = 1;
+            epsilon[col] = 0;
+        }
+
+        count_bit0 = 0;
+        count_bit1 = 0;
+    }
+
+    (gamma, epsilon)
 }
