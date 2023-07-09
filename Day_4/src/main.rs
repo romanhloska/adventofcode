@@ -34,6 +34,25 @@ impl BoardItem {
 #[derive(Default, Debug)]
 struct Board (pub Vec<Vec<BoardItem>>);
 
+impl Board {
+    fn check_col(&self, index: usize) ->  bool {
+        let mut matched: bool = true;
+        for i in 0..self.rows_len() {
+            println!("ide to: {:?}", self.0.get(i).unwrap().get(index));
+            if (self.0.get(i).unwrap().get(index).unwrap()).marked == false {
+                matched = false;
+            }
+        }
+
+        println!("matched: {}", matched);
+        matched
+    }
+
+    fn rows_len(&self) -> usize {
+        self.0.len()
+    }
+}
+
 fn mark_items(next: i32, boards: &mut Vec<Board>) {
     for board in boards {
         for items in &mut board.0 {
@@ -49,7 +68,25 @@ fn mark_items(next: i32, boards: &mut Vec<Board>) {
 fn check_result(_next: i32, boards: &Vec<Board>) -> bool {
     println!("boards in fn: {:?}", boards);
 
-    true
+    let mut found = false;
+    let mut ind:i32 = -1;
+    for board in boards {
+        for index in 0..board.0.len() {
+            ind = index as i32;
+            if board.check_col(index) {
+                found = true;
+                println!("breaking the loop as we already found bingo!!!");
+                break;
+            }
+        }
+        if found {
+            println!("found: {:?}", found);
+            println!("board: {:?}", board);
+            println!("column: {:?}", ind);
+        }
+    }
+
+    found
 }
 
 fn generate_number(r: Range<i32>) -> i32 {
