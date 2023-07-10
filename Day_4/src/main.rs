@@ -8,16 +8,33 @@ fn main() {
 
     // generate boards
     let mut boards = generate_multiple_boards(3);
-    println!("boards in fn: {:?}", boards);
+    println!("generated boards: {:?}", boards);
 
+    println!("generating numbers ... ");
+    let mut count = 0;
     loop {
+        let mut found = false;
         let next = generate_number(RANDOM_RANGE);
-        // println!("next: {:?}", next);
+        count+=1;
         mark_items(next, &mut boards);
 
-        let res = check_result(next, &boards);
+        for board in &boards {
+            found = check_result(next, &board);
+            if found {
+                let sum = sum_unmarked_items(&board);
+                let score = sum*next;
 
-        if res { break; }
+                println!("generated {} numbers.", count);
+
+                println!("last number drawn: {:?}", next);
+                println!("sum of unmarked numbers: {:?}", sum);
+                println!("The final score is {:?}", score);
+
+                break;
+            }
+        }
+
+        if found { break; }
     }
 }
 
@@ -83,45 +100,46 @@ fn mark_items(next: u32, boards: &mut Vec<Board>) {
     }
 }
 
-fn check_result(_next: u32, boards: &Vec<Board>) -> bool {
-    if boards.len() == 0 { return false }
+fn sum_unmarked_items(board: &Board) -> u32 {
+    let mut sum = 0;
+    for rows in &board.0 {
+        for r in rows {
+            if !r.marked {
+                sum+=r.value;
+            }
+        }
+    }
+
+    sum
+}
+
+fn check_result(_next: u32, board: &Board) -> bool {
+    if board.0.len() == 0 { return false }
 
     let mut found_column = false;
     let mut found_row = false;
-    let mut ind:i32 = -1;
-    for board in boards {
-        for col_index in 0..board.cols_len() {
-            ind = col_index as i32;
-            if board.check_col(col_index) {
-                found_column = true;
-                println!("column found");
+    let mut _ind:i32 = -1;
+
+    for col_index in 0..board.cols_len() {
+        _ind = col_index as i32;
+        if board.check_col(col_index) {
+            found_column = true;
+            println!("board found: {:?}", board);
+            println!("column found: {}", _ind);
+            break;
+        }
+    }
+
+    if !found_column {
+        for row_index in 0..board.rows_len() {
+            _ind = row_index as i32;
+            if board.check_row(row_index) {
+                found_row = true;
+                println!("board found: {:?}", board);
+                println!("row found: {}", _ind);
                 break;
             }
         }
-
-        if !found_column {
-            for row_index in 0..board.rows_len() {
-                ind = row_index as i32;
-                if board.check_row(row_index) {
-                    found_row = true;
-                    println!("row found");
-                    break;
-                }
-            }
-        }
-
-        if found_column {
-            println!("board found: {:?}", board);
-            println!("column: {:?}", ind);
-            break;
-        }
-
-        if found_row {
-            println!("board found: {:?}", board);
-            println!("row: {:?}", ind);
-            break;
-        }
-
     }
 
     found_column || found_row
