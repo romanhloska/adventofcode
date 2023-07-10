@@ -2,6 +2,7 @@ use std::ops::Range;
 use rand::Rng;
 
 const BOARD_SIZE: i32 = 5;
+const RANDOM_RANGE: std::ops::Range<u32> = std::ops::Range::<u32> { start: 0, end: 100 };
 
 fn main() {
 
@@ -10,7 +11,7 @@ fn main() {
     println!("boards in fn: {:?}", boards);
 
     loop {
-        let next = generate_number(1..100);
+        let next = generate_number(RANDOM_RANGE);
         // println!("next: {:?}", next);
         mark_items(next, &mut boards);
 
@@ -23,7 +24,7 @@ fn main() {
 #[derive(Default, Debug)]
 struct BoardItem {
     marked: bool,
-    value: i32,
+    value: u32,
 }
 
 impl BoardItem {
@@ -70,7 +71,7 @@ impl Board {
     }
 }
 
-fn mark_items(next: i32, boards: &mut Vec<Board>) {
+fn mark_items(next: u32, boards: &mut Vec<Board>) {
     for board in boards {
         for items in &mut board.0 {
             for i in items {
@@ -82,7 +83,7 @@ fn mark_items(next: i32, boards: &mut Vec<Board>) {
     }
 }
 
-fn check_result(_next: i32, boards: &Vec<Board>) -> bool {
+fn check_result(_next: u32, boards: &Vec<Board>) -> bool {
     if boards.len() == 0 { return false }
 
     let mut found_column = false;
@@ -126,26 +127,26 @@ fn check_result(_next: i32, boards: &Vec<Board>) -> bool {
     found_column || found_row
 }
 
-fn generate_number(r: Range<i32>) -> i32 {
+fn generate_number(r: Range<u32>) -> u32 {
     rand::thread_rng().gen_range(r)
 }
 
 fn generate_multiple_boards(n: i32) -> Vec<Board>{
     let mut boards: Vec<Board>  = Vec::new();
     for _count in 0..n {
-        let b: Board = generate_board(1..100);
+        let b: Board = generate_board(RANDOM_RANGE);
         boards.push(b);
     }
 
     boards
 }
 
-fn generate_board(_r: Range<i32>) -> Board {
+fn generate_board(_r: Range<u32>) -> Board {
     let mut board_row: Vec<Vec<BoardItem>>  = Vec::new();
     for _i in 0..BOARD_SIZE {
         let mut board_col: Vec<BoardItem> = Vec::new();
         for _j in 0..BOARD_SIZE {
-            let gen_val = generate_number(1..100);
+            let gen_val = generate_number(RANDOM_RANGE);
             let bi = build_item(false, gen_val);
             board_col.push(bi);
         }
@@ -157,7 +158,7 @@ fn generate_board(_r: Range<i32>) -> Board {
     gen_board
 }
 
-fn build_item(marked: bool, value: i32) -> BoardItem {
+fn build_item(marked: bool, value: u32) -> BoardItem {
     BoardItem {
         marked,
         value,
