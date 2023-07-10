@@ -7,10 +7,11 @@ fn main() {
 
     // generate boards
     let mut boards = generate_multiple_boards(3);
+    println!("boards in fn: {:?}", boards);
 
     loop {
         let next = generate_number(1..100);
-        println!("next: {:?}", next);
+        // println!("next: {:?}", next);
         mark_items(next, &mut boards);
 
         let res = check_result(next, &boards);
@@ -38,18 +39,34 @@ impl Board {
     fn check_col(&self, index: usize) ->  bool {
         let mut matched: bool = true;
         for i in 0..self.rows_len() {
-            println!("ide to: {:?}", self.0.get(i).unwrap().get(index));
             if (self.0.get(i).unwrap().get(index).unwrap()).marked == false {
                 matched = false;
             }
         }
 
-        println!("matched: {}", matched);
+        matched
+    }
+
+    fn check_row(&self, index: usize) ->  bool {
+        let mut matched: bool = true;
+        for i in 0..self.cols_len() {
+            if (self.0.get(index).unwrap().get(i).unwrap()).marked == false {
+                matched = false;
+            }
+        }
+
         matched
     }
 
     fn rows_len(&self) -> usize {
         self.0.len()
+    }
+    fn cols_len(&self) -> usize {
+        if self.0.is_empty() {
+            return 0
+        }
+
+        self.0.get(0).unwrap().len()
     }
 }
 
@@ -66,27 +83,47 @@ fn mark_items(next: i32, boards: &mut Vec<Board>) {
 }
 
 fn check_result(_next: i32, boards: &Vec<Board>) -> bool {
-    println!("boards in fn: {:?}", boards);
+    if boards.len() == 0 { return false }
 
-    let mut found = false;
+    let mut found_column = false;
+    let mut found_row = false;
     let mut ind:i32 = -1;
     for board in boards {
-        for index in 0..board.0.len() {
-            ind = index as i32;
-            if board.check_col(index) {
-                found = true;
-                println!("breaking the loop as we already found bingo!!!");
+        for col_index in 0..board.cols_len() {
+            ind = col_index as i32;
+            if board.check_col(col_index) {
+                found_column = true;
+                println!("column found");
                 break;
             }
         }
-        if found {
-            println!("found: {:?}", found);
-            println!("board: {:?}", board);
-            println!("column: {:?}", ind);
+
+        if !found_column {
+            for row_index in 0..board.rows_len() {
+                ind = row_index as i32;
+                if board.check_row(row_index) {
+                    found_row = true;
+                    println!("row found");
+                    break;
+                }
+            }
         }
+
+        if found_column {
+            println!("board found: {:?}", board);
+            println!("column: {:?}", ind);
+            break;
+        }
+
+        if found_row {
+            println!("board found: {:?}", board);
+            println!("row: {:?}", ind);
+            break;
+        }
+
     }
 
-    found
+    found_column || found_row
 }
 
 fn generate_number(r: Range<i32>) -> i32 {
